@@ -1,0 +1,15 @@
+{
+    "name": "task",
+    "version": "1.0.0",
+    "description": "",
+    "main": "index.js",
+    "scripts": {
+        "prebuild": "cd publishReport && npm install",
+        "build": "cd publishReport && tsc ",
+        "postbuild": "tfx extension create --manifest-globs vss-extension.json --output-path dist --rev-version",
+        "publish": "npm run-script build && tfx extension publish --manifest-globs vss-extension.json --share-with %VSTS_ACCOUNT% --output-path dist -t %PAT%",
+        "test": "jest"
+      },
+    "author": "",
+    "license": "ISC"
+  }

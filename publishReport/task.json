@@ -1,0 +1,44 @@
+{
+    "id": "13008e5e-9195-4043-9baf-c5d70da839e3",
+    "name": "Publish_Report_html",
+    "friendlyName": "Publish report in formate HTML",
+    "description": "This task helps you to deploy report result in to Report",
+    "helpMarkDown": "Upload report to Report using task.",
+    "category": "Utility",
+    "visibility": [
+        "Release"
+    ],
+    "demands": [
+        "npm"
+    ],
+    "author": "dpolania",
+    "version": {
+        "Major": 0,
+        "Minor": 1,
+        "Patch": 28
+    },
+    "instanceNameFormat": "Publish Report",
+    "inputs": [
+        {
+            "name": "ReportName",
+            "type": "string",
+            "label": "Report Name",
+            "defaultValue": "",
+            "required": true,
+            "helpMarkDown" : "Name to the artifact to be uploaded."
+        },
+        {
+            "name": "pathReport",
+            "type": "string",
+            "label": "Path of the artifact *.html",
+            "defaultValue": "*.*",
+            "required": true,
+            "helpMarkDown" : "Path to the artifact to be uploaded.The path can include one artifact of type using the *.html , *.htm , etc."
+        }
+    ],
+    "execution": {
+        "Node": {
+            "target": "index.js"
+        }
+    }
+}
