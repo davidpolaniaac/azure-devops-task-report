@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "devops-tools-task",
     "name": "DevOps Tools",
-    "version": "0.0.29",
+    "version": "0.0.30",
     "publisher": "dpolania",
     "targets": [
         {
