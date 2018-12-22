@@ -1,8 +1,8 @@
 {
     "manifestVersion": 1,
-    "id": "devops-tools-task",
-    "name": "DevOps Tools",
-    "version": "0.0.30",
+    "id": "devops-tools-task-report",
+    "name": "DevOps Tools - task report",
+    "version": "0.0.39",
     "publisher": "dpolania",
     "targets": [
         {

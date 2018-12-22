@@ -10,6 +10,7 @@ const RELEASE_DEFINITIONID = tl.getVariable("RELEASE_DEFINITIONID");
 const RELEASE_DEFINITIONENVIRONMENTID = tl.getVariable("RELEASE_DEFINITIONENVIRONMENTID");
 const RELEASE_RELEASEID = tl.getVariable("RELEASE_RELEASEID");
 const RELEASE_ATTEMPTNUMBER = tl.getVariable("RELEASE_ATTEMPTNUMBER");
+const COMMIT_INIT = "0000000000000000000000000000000000000000";
 
 async function createReport(path: string): Promise<any> {
     return new Promise(function (resolve, reject) {
@@ -22,91 +23,113 @@ async function createReport(path: string): Promise<any> {
       });
 }
 
-async function getRepository ( repos: GitInterfaces.GitRepository[], nameRepository: string) {
-    for (let index = 0; index < repos.length; index++) {
-        let element: GitInterfaces.GitRepository  = repos[index];
-        if(element.name == nameRepository){
-            common.heading(" ¡ Repository ready !");
-            return element;
-        }
-    }
-}
+async function createNewRepository(gitApiObject: GitApi.IGitApi, nameRepository : string, project: string ): Promise<GitInterfaces.GitRepository> {
 
-async function saveReport (content: string, nameRepository : string, inputReportName : string) {
-
-    common.banner('Git Configuration');
-    let webApi: nodeApi.WebApi = await common.getWebApi();
-    let gitApiObject: GitApi.IGitApi = await webApi.getGitApi();
-    let project: string = common.getProject();
-    common.heading('Project');
-    common.heading(project);
+    let newRepo: GitInterfaces.GitRepository = <GitInterfaces.GitRepository>{};
 
     try{
 
         common.banner("Create a repository");
         const createOptions: GitInterfaces.GitRepositoryCreateOptions = <GitInterfaces.GitRepositoryCreateOptions>{name: nameRepository};
-        let newRepo: GitInterfaces.GitRepository = await gitApiObject.createRepository(createOptions, project);
+        newRepo = await gitApiObject.createRepository(createOptions, project);
         common.heading(newRepo.name as string);
     }
     catch (err) {
 
         common.heading(err.message);
+        tl.setResult(tl.TaskResult.Failed, err.message);
     }
 
-    common.banner("Get Repositories");
-    const repos: GitInterfaces.GitRepository[] = await gitApiObject.getRepositories(project);
-    console.log("There are", repos.length, "repositories in this project");
+    return newRepo;
+
+}
+
+async function getNewRepository(gitApiObject: GitApi.IGitApi, nameRepository : string, project: string ): Promise<GitInterfaces.GitRepository> {
+
+    let repository: GitInterfaces.GitRepository = <GitInterfaces.GitRepository>{};
 
     common.banner("Get Repository");
-    const repository: GitInterfaces.GitRepository = await getRepository(repos, nameRepository) as GitInterfaces.GitRepository;
 
-    if (typeof repository === "undefined") {
-        tl.setResult(tl.TaskResult.Failed, "Repository is undefined");
+    repository = await gitApiObject.getRepository(nameRepository,project);
+
+    if(repository){
+
+        common.heading(" ¡ Repository ready !");
+
+    }else{
+        
+        repository = await createNewRepository(gitApiObject,nameRepository,project);
     }
 
-    const repositoryId: string = repository.id as string;
-    console.log("There is", repository.name, "repository in this project");
+    return repository;
+}
+
+async function getlastestCommit(nameRepository : string, gitApiObject: GitApi.IGitApi, project: string): Promise<string> {
+
+    common.banner("Get lastest Commit");
     const commitCriteria: GitInterfaces.GitQueryCommitsCriteria = <GitInterfaces.GitQueryCommitsCriteria> {$skip: 0, $top: 1};
-    const commits: GitInterfaces.GitCommitRef[] =  await gitApiObject.getCommits(repositoryId, commitCriteria, project);
-    let lastestCommit:string = "0000000000000000000000000000000000000000";
+    const commits: GitInterfaces.GitCommitRef[] =  await gitApiObject.getCommits(nameRepository, commitCriteria, project);
+    let lastestCommit:string = COMMIT_INIT;
 
     if (typeof commits === undefined || commits.length == 0) {
         common.heading("commit init");
     }else{
         lastestCommit =  commits[0].commitId as string;
+        console.log("Top commit in this repository: ", lastestCommit);
     }
 
-    console.log("Top commit in this repository: ", lastestCommit);
+    return lastestCommit;
 
-    common.banner("Save a report");
+}
+
+function getPush(inputReportName: string, content: string, lastestCommit: string, repository: GitInterfaces.GitRepository): GitInterfaces.GitPush {
+
+    const push : GitInterfaces.GitPush = <GitInterfaces.GitPush>{
+        commits: [
+        {
+            comment: inputReportName,
+            changes: [
+                {
+                    changeType: GitInterfaces.VersionControlChangeType.Add,
+                    item: {
+                        path: `/${RELEASE_DEFINITIONID}/${RELEASE_RELEASEID}/${RELEASE_DEFINITIONENVIRONMENTID}/${RELEASE_ATTEMPTNUMBER}/${Date.now()}.html`,
+                    },
+                    newContent: {
+                        content: content,
+                        contentType: GitInterfaces.ItemContentType.RawText
+                    }
+                }
+            ]
+        }
+    ],refUpdates:[
+        {
+            name: "refs/heads/master",
+            oldObjectId: lastestCommit
+        }
+    ], repository };
+
+    return push;
+}
+
+async function saveReport (content: string, nameRepository : string, inputReportName : string) {
+
+    common.banner('Git Configuration');
+
+    const webApi: nodeApi.WebApi = await common.getWebApi();
+    const gitApiObject: GitApi.IGitApi = await webApi.getGitApi();
+    const project: string = common.getProject();
+
+    common.heading('Project');
+    common.heading(project);
+
+    const repository: GitInterfaces.GitRepository = await getNewRepository(gitApiObject,nameRepository,project);
+    const lastestCommit : string  = await getlastestCommit(nameRepository, gitApiObject, project);
 
     try{
-        
-        let push : GitInterfaces.GitPush = <GitInterfaces.GitPush>{
-            commits: [
-            {
-                comment: inputReportName,
-                changes: [
-                    {
-                        changeType: GitInterfaces.VersionControlChangeType.Add,
-                        item: {
-                            path: `/${RELEASE_DEFINITIONID}/${RELEASE_RELEASEID}/${RELEASE_DEFINITIONENVIRONMENTID}/${RELEASE_ATTEMPTNUMBER}/${Date.now()}.html`,
-                        },
-                        newContent: {
-                            content: content,
-                            contentType: GitInterfaces.ItemContentType.RawText
-                        }
-                    }
-                ]
-            }
-        ],refUpdates:[
-            {
-                name: "refs/heads/master",
-                oldObjectId: lastestCommit
-            }
-        ],repository};
-    
-        let newPush: GitInterfaces.GitPush = await gitApiObject.createPush(push,repositoryId,project);
+
+        common.banner("Save a report");
+        const push : GitInterfaces.GitPush = getPush(inputReportName, content, lastestCommit, repository);
+        await gitApiObject.createPush(push,repository.id as string,project);
         common.heading("¡ report has been saved successfully !");
     }
     catch (err) {
