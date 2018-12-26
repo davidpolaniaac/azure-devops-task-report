@@ -2,7 +2,7 @@
     "manifestVersion": 1,
     "id": "devops-result-html-in-release-environment",
     "name": "DevOps Result",
-    "version": "0.0.39",
+    "version": "0.0.40",
     "publisher": "dpolania",
     "targets": [
         {

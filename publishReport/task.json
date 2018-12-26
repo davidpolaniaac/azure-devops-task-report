@@ -14,8 +14,8 @@
     "author": "dpolania",
     "version": {
         "Major": 0,
-        "Minor": 1,
-        "Patch": 39
+        "Minor": 0,
+        "Patch": 40
     },
     "instanceNameFormat": "Publish Report",
     "inputs": [
