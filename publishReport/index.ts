@@ -143,8 +143,8 @@ async function saveReport (content: string, nameRepository : string, inputReport
 async function run() {
 
     try {
-        const inputPathReport: string = tl.getInput('pathReport', true);
-        const inputReportName: string = tl.getInput('ReportName', true);
+        const inputPathReport: string = tl.getInput('htmlPath', true);
+        const inputReportName: string = tl.getInput('nameRepository', true);
         const html = await createReport(inputPathReport);
         await saveReport(html,REPOSITORY_NAME,inputReportName);
     }

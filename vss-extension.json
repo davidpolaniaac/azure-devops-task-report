@@ -1,7 +1,7 @@
 {
     "manifestVersion": 1,
-    "id": "devops-tools-task-report",
-    "name": "DevOps Tools - task report",
+    "id": "devops-result-html-in-release-environment",
+    "name": "DevOps Result",
     "version": "0.0.39",
     "publisher": "dpolania",
     "targets": [

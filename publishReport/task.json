@@ -20,7 +20,7 @@
     "instanceNameFormat": "Publish Report",
     "inputs": [
         {
-            "name": "ReportName",
+            "name": "nameRepository",
             "type": "string",
             "label": "Report Name",
             "defaultValue": "",
@@ -28,7 +28,7 @@
             "helpMarkDown" : "Name to the artifact to be uploaded."
         },
         {
-            "name": "pathReport",
+            "name": "htmlPath",
             "type": "string",
             "label": "Path of the artifact *.html",
             "defaultValue": "*.*",
