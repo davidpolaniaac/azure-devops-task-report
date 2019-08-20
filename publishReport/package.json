@@ -9,8 +9,9 @@
   "author": "",
   "license": "ISC",
   "dependencies": {
-    "azure-devops-node-api": "^7.0.0",
-    "azure-pipelines-task-lib": "^2.7.7",
+    "azure-devops-node-api": "^9.0.1",
+    "azure-devops-task-utils": "^1.0.14",
+    "azure-pipelines-task-lib": "^2.8.0",
     "inliner": "^1.13.1"
   },
   "devDependencies": {

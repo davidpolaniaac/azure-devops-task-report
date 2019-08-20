@@ -2,21 +2,23 @@
     "manifestVersion": 1,
     "id": "devops-result-html-in-release-environment",
     "name": "DevOps Result",
-    "version": "0.0.40",
+    "version": "0.0.41",
     "publisher": "dpolania",
     "targets": [
         {
             "id": "Microsoft.VisualStudio.Services"
         }
-    ],    
+    ],
     "description": "Tools for building/releasing with DevOps. Includes build/release tasks.",
     "categories": [
         "Azure Pipelines"
     ],
     "icons": {
-        "default": "images/extension-icon.png"        
+        "default": "images/extension-icon.png"
     },
-    "scopes": ["vso.code_full"],
+    "scopes": [
+        "vso.code_full"
+    ],
     "files": [
         {
             "path": "publishReport"
