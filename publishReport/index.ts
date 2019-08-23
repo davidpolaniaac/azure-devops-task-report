@@ -167,7 +167,7 @@ async function run() {
         const inputPathReport: string = tl.getInput('htmlPath', true);
         const inputReportName: string = tl.getInput('nameRepository', true);
         const html = await createReport(inputPathReport);
-        await saveReportInRelease(html, reportNameRandom);
+        await saveReportInRelease(html, `${inputReportName}-+-${reportNameRandom}`);
         await saveReportInRepository(html, REPOSITORY_NAME, inputReportName, reportNameRandom);
         
     }
